@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NMAP — God Level Cheatsheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #050a0f;
+    --panel: #090f17;
+    --border: #0f2535;
+    --green: #00ff9d;
+    --cyan: #00d4ff;
+    --orange: #ff6b35;
+    --yellow: #ffd700;
+    --red: #ff3366;
+    --purple: #a855f7;
+    --text: #c8d8e8;
+    --muted: #4a6070;
+    --glow-green: 0 0 20px rgba(0,255,157,0.4);
+    --glow-cyan: 0 0 20px rgba(0,212,255,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 20% 0%, rgba(0,255,157,0.04) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(0,212,255,0.04) 0%, transparent 50%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,255,157,0.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,255,157,0.015) 40px);
+  }
+
+  /* HEADER */
+  header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--green), var(--cyan), transparent);
+  }
+  .header-badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.8;
+  }
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 56px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    text-shadow: 0 0 40px rgba(0,255,157,0.3);
+    letter-spacing: -1px;
+  }
+  h1 span { color: var(--green); }
+  .header-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 10px;
+    letter-spacing: 2px;
+  }
+  .header-tags {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    padding: 4px 12px;
+    border: 1px solid;
+    letter-spacing: 2px;
+  }
+  .tag.green { border-color: var(--green); color: var(--green); }
+  .tag.cyan { border-color: var(--cyan); color: var(--cyan); }
+  .tag.orange { border-color: var(--orange); color: var(--orange); }
+
+  /* SEARCH */
+  .search-bar {
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .search-icon { color: var(--green); font-family: 'Share Tech Mono', monospace; font-size: 14px; }
+  #searchInput {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--green);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 14px;
+    flex: 1;
+    caret-color: var(--green);
+  }
+  #searchInput::placeholder { color: var(--muted); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 16px 20px;
+    cursor: pointer;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    user-select: none;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+
+  /* CONTENT */
+  .content { padding: 40px; }
+
+  .section {
+    display: none;
+  }
+  .section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    font-weight: 300;
+    letter-spacing: 0.5px;
+  }
+
+  /* TABLE */
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    margin-bottom: 40px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  thead tr {
+    background: rgba(0,255,157,0.05);
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--green);
+    padding: 14px 18px;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(15,37,53,0.6);
+    transition: background 0.15s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(0,255,157,0.025); }
+  td {
+    padding: 14px 18px;
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  td:first-child {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    white-space: nowrap;
+  }
+
+  /* Syntax column */
+  .syntax {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--yellow);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* Example column */
+  .example {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  /* Job column */
+  .job {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 300;
+    max-width: 340px;
+  }
+  .job strong { color: var(--green); font-weight: 600; }
+
+  /* SEVERITY BADGES */
+  .badge {
+    display: inline-block;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+    border-radius: 1px;
+  }
+  .badge.recon { background: rgba(0,212,255,0.12); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+  .badge.stealth { background: rgba(168,85,247,0.12); color: var(--purple); border: 1px solid rgba(168,85,247,0.3); }
+  .badge.loud { background: rgba(255,107,53,0.12); color: var(--orange); border: 1px solid rgba(255,107,53,0.3); }
+  .badge.critical { background: rgba(255,51,102,0.12); color: var(--red); border: 1px solid rgba(255,51,102,0.3); }
+  .badge.pro { background: rgba(255,215,0,0.1); color: var(--yellow); border: 1px solid rgba(255,215,0,0.3); }
+
+  /* TIP BOX */
+  .tip {
+    background: rgba(0,255,157,0.04);
+    border: 1px solid rgba(0,255,157,0.15);
+    border-left: 3px solid var(--green);
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .tip-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  /* INTERVIEW CALLOUT */
+  .interview {
+    background: rgba(255,215,0,0.04);
+    border: 1px solid rgba(255,215,0,0.2);
+    border-left: 3px solid var(--yellow);
+    padding: 16px 20px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .interview-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--yellow);
+    letter-spacing: 3px;
+    margin-bottom: 6px;
+  }
+
+  /* QUICK REF */
+  .quick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .quick-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+  .quick-card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    color: var(--cyan);
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .quick-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(15,37,53,0.4);
+    font-size: 12px;
+  }
+  .quick-item:last-child { border-bottom: none; }
+  .quick-cmd {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--yellow);
+    font-size: 11px;
+  }
+  .quick-desc { color: var(--muted); font-size: 12px; }
+
+  /* HIDDEN ROW (search) */
+  tr.hidden { display: none; }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 40px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+  footer span { color: var(--green); }
+
+  /* SCAN LEVEL LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 768px) {
+    header, .content, .search-bar { padding-left: 20px; padding-right: 20px; }
+    .tabs { padding: 0 20px; }
+    h1 { font-size: 32px; }
+    td:first-child { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">// OFFENSIVE SECURITY REFERENCE v1.0</div>
+  <h1>NM<span>AP</span> MASTERY</h1>
+  <div class="header-sub">GOD LEVEL CHEATSHEET — SOC · PENTEST · INTERVIEWS</div>
+  <div class="header-tags">
+    <span class="tag green">RECONNAISSANCE</span>
+    <span class="tag cyan">PORT SCANNING</span>
+    <span class="tag orange">VULNERABILITY DETECTION</span>
+  </div>
+</header>
+
+<div class="search-bar">
+  <span class="search-icon">$&gt;</span>
+  <input type="text" id="searchInput" placeholder="filter commands... e.g. 'stealth' or 'version'" oninput="filterTable()" />
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('overview', this)">OVERVIEW</div>
+  <div class="tab" onclick="showTab('host', this)">HOST DISCOVERY</div>
+  <div class="tab" onclick="showTab('scan-types', this)">SCAN TYPES</div>
+  <div class="tab" onclick="showTab('ports', this)">PORT SELECTION</div>
+  <div class="tab" onclick="showTab('version', this)">VERSION & OS</div>
+  <div class="tab" onclick="showTab('scripts', this)">NSE SCRIPTS</div>
+  <div class="tab" onclick="showTab('timing', this)">TIMING & EVASION</div>
+  <div class="tab" onclick="showTab('output', this)">OUTPUT</div>
+  <div class="tab" onclick="showTab('firewall', this)">FIREWALL EVASION</div>
+  <div class="tab" onclick="showTab('interview', this)">🎯 INTERVIEW</div>
+</div>
+
+<div class="content">
+
+  <!-- OVERVIEW -->
+  <div id="section-overview" class="section active">
+    <div class="section-header">
+      <div class="section-title">QUICK REFERENCE — ALL FLAGS</div>
+    </div>
+    <div class="section-desc">The most used flags at a glance. Know these cold before any interview.</div>
+
+    <div class="quick-grid">
+      <div class="quick-card">
+        <div class="quick-card-title">SCAN TYPES</div>
+        <div class="quick-item"><span class="quick-cmd">-sS</span><span class="quick-desc">SYN / Stealth scan</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sT</span><span class="quick-desc">TCP Connect scan</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sU</span><span class="quick-desc">UDP scan</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sA</span><span class="quick-desc">ACK scan (firewall map)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sN/sF/sX</span><span class="quick-desc">Null, FIN, Xmas scans</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sV</span><span class="quick-desc">Version detection</span></div>
+        <div class="quick-item"><span class="quick-cmd">-sC</span><span class="quick-desc">Default NSE scripts</span></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-card-title">HOST DISCOVERY</div>
+        <div class="quick-item"><span class="quick-cmd">-sn</span><span class="quick-desc">Ping sweep (no port scan)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-Pn</span><span class="quick-desc">Skip ping (assume up)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-PS</span><span class="quick-desc">TCP SYN ping</span></div>
+        <div class="quick-item"><span class="quick-cmd">-PA</span><span class="quick-desc">TCP ACK ping</span></div>
+        <div class="quick-item"><span class="quick-cmd">-PE</span><span class="quick-desc">ICMP echo ping</span></div>
+        <div class="quick-item"><span class="quick-cmd">-PR</span><span class="quick-desc">ARP ping (LAN only)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-n</span><span class="quick-desc">No DNS resolution</span></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-card-title">PORTS</div>
+        <div class="quick-item"><span class="quick-cmd">-p 80</span><span class="quick-desc">Specific port</span></div>
+        <div class="quick-item"><span class="quick-cmd">-p 1-1000</span><span class="quick-desc">Port range</span></div>
+        <div class="quick-item"><span class="quick-cmd">-p-</span><span class="quick-desc">All 65535 ports</span></div>
+        <div class="quick-item"><span class="quick-cmd">-F</span><span class="quick-desc">Top 100 ports (fast)</span></div>
+        <div class="quick-item"><span class="quick-cmd">--top-ports N</span><span class="quick-desc">Top N ports</span></div>
+        <div class="quick-item"><span class="quick-cmd">-r</span><span class="quick-desc">Sequential port order</span></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-card-title">TIMING</div>
+        <div class="quick-item"><span class="quick-cmd">-T0</span><span class="quick-desc">Paranoid (IDS evasion)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-T1</span><span class="quick-desc">Sneaky</span></div>
+        <div class="quick-item"><span class="quick-cmd">-T2</span><span class="quick-desc">Polite</span></div>
+        <div class="quick-item"><span class="quick-cmd">-T3</span><span class="quick-desc">Normal (default)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-T4</span><span class="quick-desc">Aggressive (CTF/labs)</span></div>
+        <div class="quick-item"><span class="quick-cmd">-T5</span><span class="quick-desc">Insane (unreliable)</span></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-card-title">OUTPUT</div>
+        <div class="quick-item"><span class="quick-cmd">-oN</span><span class="quick-desc">Normal output</span></div>
+        <div class="quick-item"><span class="quick-cmd">-oX</span><span class="quick-desc">XML output</span></div>
+        <div class="quick-item"><span class="quick-cmd">-oG</span><span class="quick-desc">Grepable output</span></div>
+        <div class="quick-item"><span class="quick-cmd">-oA</span><span class="quick-desc">All formats at once</span></div>
+        <div class="quick-item"><span class="quick-cmd">-v / -vv</span><span class="quick-desc">Verbose / Extra verbose</span></div>
+        <div class="quick-item"><span class="quick-cmd">--open</span><span class="quick-desc">Show only open ports</span></div>
+      </div>
+      <div class="quick-card">
+        <div class="quick-card-title">EVASION & SPOOFING</div>
+        <div class="quick-item"><span class="quick-cmd">-D RND:10</span><span class="quick-desc">Decoy IPs</span></div>
+        <div class="quick-item"><span class="quick-cmd">-S IP</span><span class="quick-desc">Spoof source IP</span></div>
+        <div class="quick-item"><span class="quick-cmd">-e eth0</span><span class="quick-desc">Use specific interface</span></div>
+        <div class="quick-item"><span class="quick-cmd">-f</span><span class="quick-desc">Fragment packets</span></div>
+        <div class="quick-item"><span class="quick-cmd">--mtu 8</span><span class="quick-desc">Custom MTU</span></div>
+        <div class="quick-item"><span class="quick-cmd">--proxies</span><span class="quick-desc">Route through proxies</span></div>
+      </div>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">// GURU TIP</div>
+      In a SOC/pentest interview, if they ask "how would you scan a target without being detected?" — your answer is <strong style="color:var(--green)">-sS -T1 -f -D RND:5 --data-length 25</strong>. That single command combo shows you understand stealth, IDS evasion, decoys, and packet fragmentation simultaneously.
+    </div>
+  </div>
+
+  <!-- HOST DISCOVERY -->
+  <div id="section-host" class="section">
+    <div class="section-header">
+      <div class="section-title">HOST DISCOVERY</div>
+    </div>
+    <div class="section-desc">Find live hosts before scanning ports. Always start here in a real engagement.</div>
+    <div class="tip">
+      <div class="tip-label">// GURU TIP</div>
+      Many firewalls block ICMP (ping). Use <strong style="color:var(--green)">-Pn</strong> to skip host discovery entirely and assume the target is up. In CTFs and interviews, this is often the move when a target seems "dead" but isn't.
+    </div>
+    <div class="table-wrap">
+      <table id="table-host">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-sn</td>
+            <td class="syntax">nmap -sn [target]</td>
+            <td class="example">nmap -sn 192.168.1.0/24</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Ping sweep — discovers live hosts on a subnet <strong>without scanning any ports</strong>. Your first move in any internal assessment.</td>
+          </tr>
+          <tr>
+            <td>-Pn</td>
+            <td class="syntax">nmap -Pn [target]</td>
+            <td class="example">nmap -Pn 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Skip host discovery. Treats target as online. Use when ICMP is blocked by firewall and host appears unreachable.</td>
+          </tr>
+          <tr>
+            <td>-PS</td>
+            <td class="syntax">nmap -PS[ports] [target]</td>
+            <td class="example">nmap -PS22,80,443 10.0.0.1</td>
+            <td class="job"><span class="badge recon">RECON</span><br>TCP SYN ping to specific ports. Discovers hosts that block ICMP but respond to TCP. More reliable than ICMP on hardened networks.</td>
+          </tr>
+          <tr>
+            <td>-PA</td>
+            <td class="syntax">nmap -PA[ports] [target]</td>
+            <td class="example">nmap -PA80 10.0.0.1</td>
+            <td class="job"><span class="badge recon">RECON</span><br>TCP ACK ping. Works differently from SYN — some stateful firewalls let ACK packets through. Used in combination with -PS.</td>
+          </tr>
+          <tr>
+            <td>-PE</td>
+            <td class="syntax">nmap -PE [target]</td>
+            <td class="example">nmap -PE 192.168.1.0/24</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Standard ICMP echo (classic ping). Fast but often blocked. Only reliable on LANs or permissive networks.</td>
+          </tr>
+          <tr>
+            <td>-PR</td>
+            <td class="syntax">nmap -PR [target]</td>
+            <td class="example">nmap -PR 192.168.1.0/24</td>
+            <td class="job"><span class="badge recon">RECON</span><br>ARP ping — fastest and most reliable host discovery on <strong>local networks</strong>. Can't be blocked by host firewall. Nmap uses this automatically on LAN.</td>
+          </tr>
+          <tr>
+            <td>-iL</td>
+            <td class="syntax">nmap -iL [file.txt]</td>
+            <td class="example">nmap -sn -iL targets.txt</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Read targets from file. Essential for scanning large IP lists in real engagements. One IP/hostname/range per line.</td>
+          </tr>
+          <tr>
+            <td>--exclude</td>
+            <td class="syntax">nmap [range] --exclude [IP]</td>
+            <td class="example">nmap 10.0.0.0/24 --exclude 10.0.0.1</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Exclude specific IPs from a scan range. Critical in production environments to protect fragile devices like printers, legacy systems, or out-of-scope hosts.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SCAN TYPES -->
+  <div id="section-scan-types" class="section">
+    <div class="section-header">
+      <div class="section-title">SCAN TYPES</div>
+    </div>
+    <div class="section-desc">Different scan techniques leave different network footprints. Knowing WHY each exists is the interview differentiator.</div>
+    <div class="legend">
+      <div class="legend-item"><span class="badge stealth">STEALTH</span> Low noise, harder to detect</div>
+      <div class="legend-item"><span class="badge loud">LOUD</span> Noisy, logs created on target</div>
+      <div class="legend-item"><span class="badge critical">CRITICAL</span> Must know for interviews</div>
+    </div>
+    <div class="table-wrap">
+      <table id="table-scan-types">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-sS</td>
+            <td class="syntax">nmap -sS [target]</td>
+            <td class="example">nmap -sS -p 1-1000 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><span class="badge critical">CRITICAL</span><br><strong>SYN / Half-Open scan.</strong> Sends SYN, receives SYN-ACK, then sends RST (never completes handshake). Not logged by most apps. Requires root. <em>Most popular scan type.</em></td>
+          </tr>
+          <tr>
+            <td>-sT</td>
+            <td class="syntax">nmap -sT [target]</td>
+            <td class="example">nmap -sT 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br><strong>TCP Connect scan.</strong> Full 3-way handshake. Used when you don't have raw socket privileges (non-root). Gets logged by target OS. Slower and noisier than -sS.</td>
+          </tr>
+          <tr>
+            <td>-sU</td>
+            <td class="syntax">nmap -sU [target]</td>
+            <td class="example">nmap -sU -p 53,161,67 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br><strong>UDP scan.</strong> Probes UDP ports (DNS=53, SNMP=161, DHCP=67). Very slow. Many services run on UDP — attackers love DNS and SNMP. Combine with -sS for complete picture.</td>
+          </tr>
+          <tr>
+            <td>-sA</td>
+            <td class="syntax">nmap -sA [target]</td>
+            <td class="example">nmap -sA 192.168.1.1</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br><strong>ACK scan.</strong> Maps firewall rules — distinguishes filtered vs unfiltered ports. Does NOT tell you if a port is open. Purely used to understand firewall topology.</td>
+          </tr>
+          <tr>
+            <td>-sN</td>
+            <td class="syntax">nmap -sN [target]</td>
+            <td class="example">nmap -sN 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br><strong>Null scan.</strong> Sends packet with NO flags set. RFC 793 says closed ports send RST. Open/filtered ports send nothing. Bypasses some stateless firewalls. Doesn't work on Windows.</td>
+          </tr>
+          <tr>
+            <td>-sF</td>
+            <td class="syntax">nmap -sF [target]</td>
+            <td class="example">nmap -sF 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br><strong>FIN scan.</strong> Sets only the FIN flag. Same logic as Null — closed ports respond with RST, open ports are silent. Evades some packet filters. Linux/UNIX targets only.</td>
+          </tr>
+          <tr>
+            <td>-sX</td>
+            <td class="syntax">nmap -sX [target]</td>
+            <td class="example">nmap -sX 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br><strong>Xmas scan.</strong> Sets FIN, PSH, URG flags (packet "lit up like a Christmas tree"). Same RFC 793 logic. Also fails on Windows. More unusual pattern — evades basic signature detection.</td>
+          </tr>
+          <tr>
+            <td>-sM</td>
+            <td class="syntax">nmap -sM [target]</td>
+            <td class="example">nmap -sM 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br><strong>Maimon scan.</strong> FIN+ACK flags. Some BSD systems respond oddly, revealing port states. Niche but good to know for advanced interviews.</td>
+          </tr>
+          <tr>
+            <td>-sW</td>
+            <td class="syntax">nmap -sW [target]</td>
+            <td class="example">nmap -sW 192.168.1.1</td>
+            <td class="job"><span class="badge recon">RECON</span><br><strong>Window scan.</strong> Like ACK but examines TCP window size field. On some systems differentiates open vs closed ports. Used for firewall evasion research.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="interview">
+      <div class="interview-label">// 🎯 INTERVIEW GOLD</div>
+      "What's the difference between -sS and -sT?" This is a classic. Answer: <strong>-sS sends SYN and resets with RST before completing the handshake — no connection is ever fully established so it's not logged by the application. -sT completes the full 3-way handshake and IS logged.</strong> -sS requires root/admin. -sT does not.
+    </div>
+  </div>
+
+  <!-- PORT SELECTION -->
+  <div id="section-ports" class="section">
+    <div class="section-header">
+      <div class="section-title">PORT SELECTION</div>
+    </div>
+    <div class="section-desc">Control exactly which ports get scanned. Smart port selection is the difference between a 30-second scan and a 3-hour scan.</div>
+    <div class="table-wrap">
+      <table id="table-ports">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-p [port]</td>
+            <td class="syntax">nmap -p [port] [target]</td>
+            <td class="example">nmap -p 443 10.10.10.5
+nmap -p 22,80,443 10.10.10.5</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Scan specific port(s). Comma-separate for multiple. Use when you already know what service you're investigating. Fastest targeted approach.</td>
+          </tr>
+          <tr>
+            <td>-p [range]</td>
+            <td class="syntax">nmap -p [start-end] [target]</td>
+            <td class="example">nmap -p 1-1024 10.10.10.5
+nmap -p 8000-9000 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Scan a range of ports. Port 1-1024 covers all well-known/privileged ports. Great for focused enumeration of custom service ranges.</td>
+          </tr>
+          <tr>
+            <td>-p-</td>
+            <td class="syntax">nmap -p- [target]</td>
+            <td class="example">nmap -p- -T4 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br>Scan ALL 65,535 ports. Use in CTFs and full assessments. Slow on -T3, always combine with -T4 for speed. Essential — attackers and defenders both need the full picture.</td>
+          </tr>
+          <tr>
+            <td>-F</td>
+            <td class="syntax">nmap -F [target]</td>
+            <td class="example">nmap -F 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Fast scan — top 100 most common ports only. Great for quick triage in incident response when speed matters more than completeness.</td>
+          </tr>
+          <tr>
+            <td>--top-ports</td>
+            <td class="syntax">nmap --top-ports [N] [target]</td>
+            <td class="example">nmap --top-ports 1000 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Scan the N most common ports by frequency. Nmap's built-in frequency data from real-world scans. Balances coverage vs speed better than -F.</td>
+          </tr>
+          <tr>
+            <td>-p U:,T:</td>
+            <td class="syntax">nmap -p U:[udp_ports],T:[tcp_ports] [target]</td>
+            <td class="example">nmap -p U:53,161,T:80,443 -sU -sS target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Specify separate UDP and TCP ports in one scan. Requires both -sU and -sS flags. Professional-grade enumeration combining both protocols simultaneously.</td>
+          </tr>
+          <tr>
+            <td>--exclude-ports</td>
+            <td class="syntax">nmap --exclude-ports [ports] [target]</td>
+            <td class="example">nmap -p- --exclude-ports 80,443 target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Scan all ports except specified ones. Useful in authorized tests where certain ports/services must not be touched per scope rules.</td>
+          </tr>
+          <tr>
+            <td>-r</td>
+            <td class="syntax">nmap -r [target]</td>
+            <td class="example">nmap -r -p 1-1000 10.10.10.5</td>
+            <td class="job">Scan ports in sequential (numeric) order instead of random. Useful for deterministic testing and debugging, but more obvious to IDS systems.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- VERSION & OS -->
+  <div id="section-version" class="section">
+    <div class="section-header">
+      <div class="section-title">VERSION & OS DETECTION</div>
+    </div>
+    <div class="section-desc">Go beyond open/closed — identify exactly what software and version is running. Critical for vulnerability matching in SOC and pentesting.</div>
+    <div class="tip">
+      <div class="tip-label">// GURU TIP</div>
+      The combination <strong style="color:var(--green)">nmap -sV -O -sC --version-intensity 5</strong> is your all-purpose enumeration command. In a CTF or pentest, run this after your initial -p- discovery to get full service and OS fingerprinting.
+    </div>
+    <div class="table-wrap">
+      <table id="table-version">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-sV</td>
+            <td class="syntax">nmap -sV [target]</td>
+            <td class="example">nmap -sV 10.10.10.5</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br><strong>Service version detection.</strong> Probes open ports to determine service name and exact version (e.g. Apache 2.4.29, OpenSSH 7.2). Maps directly to CVEs. Never skip this in a real assessment.</td>
+          </tr>
+          <tr>
+            <td>--version-intensity</td>
+            <td class="syntax">nmap -sV --version-intensity [0-9] [target]</td>
+            <td class="example">nmap -sV --version-intensity 9 target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Controls how aggressively nmap probes for version info. 0=lightest, 9=try everything. Higher values find more but take longer and are louder.</td>
+          </tr>
+          <tr>
+            <td>--version-all</td>
+            <td class="syntax">nmap -sV --version-all [target]</td>
+            <td class="example">nmap -sV --version-all target</td>
+            <td class="job"><span class="badge loud">LOUD</span><br>Try every single probe for version detection. Equivalent to --version-intensity 9. Use on stubborn services that don't respond to lighter probing.</td>
+          </tr>
+          <tr>
+            <td>-O</td>
+            <td class="syntax">nmap -O [target]</td>
+            <td class="example">nmap -O 10.10.10.5</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br><strong>OS fingerprinting.</strong> Analyzes TCP/IP stack behavior to guess OS (Windows 10, Linux 4.x, etc). Requires root. Needs at least one open AND one closed port for accuracy.</td>
+          </tr>
+          <tr>
+            <td>--osscan-guess</td>
+            <td class="syntax">nmap -O --osscan-guess [target]</td>
+            <td class="example">nmap -O --osscan-guess 10.10.10.5</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Makes nmap guess OS even when it's not confident. Shows best match with percentage. Useful when exact detection fails — gives you something to work with.</td>
+          </tr>
+          <tr>
+            <td>-A</td>
+            <td class="syntax">nmap -A [target]</td>
+            <td class="example">nmap -A 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br><strong>Aggressive scan = -sV + -O + -sC + --traceroute.</strong> All-in-one. Extremely loud, logs everywhere. Gold standard for CTFs and authorized labs. Never use -A in stealth engagements.</td>
+          </tr>
+          <tr>
+            <td>--traceroute</td>
+            <td class="syntax">nmap --traceroute [target]</td>
+            <td class="example">nmap --traceroute 8.8.8.8</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Traces network path to target. Reveals routers, hops, network topology. Useful in network mapping and understanding segmentation in an environment.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- NSE SCRIPTS -->
+  <div id="section-scripts" class="section">
+    <div class="section-header">
+      <div class="section-title">NSE — NMAP SCRIPTING ENGINE</div>
+    </div>
+    <div class="section-desc">NSE transforms nmap from a port scanner into a vulnerability scanner. Scripts live in /usr/share/nmap/scripts/. Categories: auth, broadcast, brute, default, discovery, exploit, external, fuzzer, intrusive, malware, safe, version, vuln.</div>
+    <div class="interview">
+      <div class="interview-label">// 🎯 INTERVIEW GOLD</div>
+      "Name some nmap scripts you've used." Answer with: <strong>http-title, smb-vuln-ms17-010 (EternalBlue), ftp-anon, ssh-brute, ssl-heartbleed, dns-zone-transfer, http-robots.txt</strong>. These show you know both recon and vulnerability detection scripts.
+    </div>
+    <div class="table-wrap">
+      <table id="table-scripts">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-sC</td>
+            <td class="syntax">nmap -sC [target]</td>
+            <td class="example">nmap -sC -sV 10.10.10.5</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Run default NSE scripts — safe, enumeration-focused. Includes banner grabbing, SSL cert info, HTTP headers, SMB info. Safe to run without much noise.</td>
+          </tr>
+          <tr>
+            <td>--script=vuln</td>
+            <td class="syntax">nmap --script=vuln [target]</td>
+            <td class="example">nmap --script=vuln 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br>Run all vulnerability detection scripts. Checks for known CVEs, misconfigs, weak creds. Intrusive — logs created. Essential in pentest reporting and CTF initial scans.</td>
+          </tr>
+          <tr>
+            <td>--script=safe</td>
+            <td class="syntax">nmap --script=safe [target]</td>
+            <td class="example">nmap --script=safe 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Run only scripts classified as "safe" — won't crash services or create significant load. Appropriate for use in production environments during authorized assessments.</td>
+          </tr>
+          <tr>
+            <td>smb-vuln-ms17-010</td>
+            <td class="syntax">nmap --script=smb-vuln-ms17-010 [target]</td>
+            <td class="example">nmap -p 445 --script=smb-vuln-ms17-010 10.10.10.5</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br><strong>EternalBlue detection</strong> (MS17-010 / WannaCry). Checks if SMB is vulnerable to the most famous exploit of the decade. Every SOC analyst must know this command.</td>
+          </tr>
+          <tr>
+            <td>ftp-anon</td>
+            <td class="syntax">nmap --script=ftp-anon [target]</td>
+            <td class="example">nmap -p 21 --script=ftp-anon 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Check if FTP allows anonymous login. Unauthenticated FTP access is a critical misconfiguration. Extremely common finding in CTFs and real networks.</td>
+          </tr>
+          <tr>
+            <td>http-title</td>
+            <td class="syntax">nmap --script=http-title [target]</td>
+            <td class="example">nmap -p 80,443 --script=http-title target</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Grabs the HTML title of web pages. Quickly identifies what's running on web ports without opening a browser. Useful in large subnet sweeps.</td>
+          </tr>
+          <tr>
+            <td>ssl-heartbleed</td>
+            <td class="syntax">nmap --script=ssl-heartbleed [target]</td>
+            <td class="example">nmap -p 443 --script=ssl-heartbleed target</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Checks for the Heartbleed bug (CVE-2014-0160) in OpenSSL. Allows memory leak of server process — credentials, keys. Still found in legacy systems today.</td>
+          </tr>
+          <tr>
+            <td>dns-zone-transfer</td>
+            <td class="syntax">nmap --script=dns-zone-transfer --script-args dns-zone-transfer.domain=[domain] [target]</td>
+            <td class="example">nmap -p 53 --script=dns-zone-transfer --script-args dns-zone-transfer.domain=target.com ns1.target.com</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Attempts DNS zone transfer (AXFR). A successful zone transfer reveals ALL internal DNS records — entire network map. Classic misconfiguration that's still seen in real engagements.</td>
+          </tr>
+          <tr>
+            <td>http-robots.txt</td>
+            <td class="syntax">nmap --script=http-robots.txt [target]</td>
+            <td class="example">nmap -p 80 --script=http-robots.txt target</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Fetches and displays robots.txt. Often contains hidden directories and paths admins don't want indexed — directly useful for web enumeration.</td>
+          </tr>
+          <tr>
+            <td>--script-args</td>
+            <td class="syntax">nmap --script=[script] --script-args [key=val] [target]</td>
+            <td class="example">nmap --script=ssh-brute --script-args userdb=users.txt,passdb=pass.txt target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Pass arguments to NSE scripts. Used for brute-force scripts (wordlists), DNS scripts (domain names), authentication scripts (credentials). Required for advanced script usage.</td>
+          </tr>
+          <tr>
+            <td>--script-updatedb</td>
+            <td class="syntax">nmap --script-updatedb</td>
+            <td class="example">sudo nmap --script-updatedb</td>
+            <td class="job">Rebuild the NSE script database after adding custom scripts. Run whenever you add a new script to /usr/share/nmap/scripts/.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TIMING & EVASION -->
+  <div id="section-timing" class="section">
+    <div class="section-header">
+      <div class="section-title">TIMING & PERFORMANCE</div>
+    </div>
+    <div class="section-desc">Speed vs stealth. The timing profile you choose defines how visible you are to IDS/IPS and how fast results come back.</div>
+    <div class="table-wrap">
+      <table id="table-timing">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-T0 (Paranoid)</td>
+            <td class="syntax">nmap -T0 [target]</td>
+            <td class="example">nmap -T0 -sS 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>One probe every 5 minutes. Designed to evade IDS thresholds. Practically unusable for full scans — only use for single-port checks where stealth is paramount.</td>
+          </tr>
+          <tr>
+            <td>-T1 (Sneaky)</td>
+            <td class="syntax">nmap -T1 [target]</td>
+            <td class="example">nmap -T1 -p 1-100 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>15 seconds between probes. Slow enough to avoid most IDS rate-based detection. Use in real APT-style engagements where you have hours and need to stay under radar.</td>
+          </tr>
+          <tr>
+            <td>-T2 (Polite)</td>
+            <td class="syntax">nmap -T2 [target]</td>
+            <td class="example">nmap -T2 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Polite — slows scan to use less bandwidth. Good for scanning during business hours in authorized assessments without impacting network performance.</td>
+          </tr>
+          <tr>
+            <td>-T3 (Normal)</td>
+            <td class="syntax">nmap -T3 [target]</td>
+            <td class="example">nmap 10.10.10.5</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Default timing. Balances speed and reliability. Used when you have no specific speed requirement. Nmap's baseline behavior.</td>
+          </tr>
+          <tr>
+            <td>-T4 (Aggressive)</td>
+            <td class="syntax">nmap -T4 [target]</td>
+            <td class="example">nmap -T4 -p- 10.10.10.5</td>
+            <td class="job"><span class="badge loud">LOUD</span><span class="badge critical">CRITICAL</span><br><strong>Recommended for CTFs and fast lab scans.</strong> Assumes fast, reliable network. Times out slow responses quickly. Most professionals use -T4 as their default on internal networks.</td>
+          </tr>
+          <tr>
+            <td>-T5 (Insane)</td>
+            <td class="syntax">nmap -T5 [target]</td>
+            <td class="example">nmap -T5 192.168.1.1</td>
+            <td class="job"><span class="badge loud">LOUD</span><br>Fastest possible — sacrifices accuracy for speed. Packets can be dropped, ports missed. Rarely used in practice. Only on extremely fast, local networks when speed is everything.</td>
+          </tr>
+          <tr>
+            <td>--min-rate</td>
+            <td class="syntax">nmap --min-rate [packets/sec] [target]</td>
+            <td class="example">nmap --min-rate 5000 -p- target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Force nmap to send at least N packets per second. Overrides timing templates for raw speed control. <strong>--min-rate 5000 -p-</strong> is a popular CTF combo for blazing fast full port scans.</td>
+          </tr>
+          <tr>
+            <td>--max-rate</td>
+            <td class="syntax">nmap --max-rate [packets/sec] [target]</td>
+            <td class="example">nmap --max-rate 100 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Cap packet rate. Prevents overwhelming fragile systems and helps evade rate-based IDS detection. Essential when scanning production systems in authorized engagements.</td>
+          </tr>
+          <tr>
+            <td>--min-parallelism</td>
+            <td class="syntax">nmap --min-parallelism [N] [target]</td>
+            <td class="example">nmap --min-parallelism 100 target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Force minimum number of parallel probes. Increases speed on reliable networks. Useful when scanning many hosts and default parallelism is too conservative.</td>
+          </tr>
+          <tr>
+            <td>--host-timeout</td>
+            <td class="syntax">nmap --host-timeout [time] [target]</td>
+            <td class="example">nmap --host-timeout 30s 192.168.1.0/24</td>
+            <td class="job">Give up on a host after this duration. Prevents slow/dead hosts from blocking large subnet scans. Use in bulk sweeps where some hosts are expected to be unresponsive.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div id="section-output" class="section">
+    <div class="section-header">
+      <div class="section-title">OUTPUT & FORMATTING</div>
+    </div>
+    <div class="section-desc">Always save your scan output. In professional engagements, the output IS your evidence. Use -oA to save all formats simultaneously.</div>
+    <div class="table-wrap">
+      <table id="table-output">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-oN</td>
+            <td class="syntax">nmap -oN [filename] [target]</td>
+            <td class="example">nmap -sV target -oN scan.txt</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Normal output — human-readable, same as terminal output. Your primary report format. Always save scans with -oN in real work.</td>
+          </tr>
+          <tr>
+            <td>-oX</td>
+            <td class="syntax">nmap -oX [filename] [target]</td>
+            <td class="example">nmap -sV target -oX scan.xml</td>
+            <td class="job"><span class="badge pro">PRO</span><br>XML output. Parseable by tools like Metasploit (db_import), Nessus importers, and custom scripts. Essential for integration with professional pentesting workflows.</td>
+          </tr>
+          <tr>
+            <td>-oG</td>
+            <td class="syntax">nmap -oG [filename] [target]</td>
+            <td class="example">nmap -sn 192.168.1.0/24 -oG hosts.txt</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Grepable output — easily parsed with grep, awk, cut. Use with <code style="color:var(--yellow)">grep "open" scan.gnmap</code> to extract open ports quickly.</td>
+          </tr>
+          <tr>
+            <td>-oA</td>
+            <td class="syntax">nmap -oA [basename] [target]</td>
+            <td class="example">nmap -sV target -oA full_scan</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br><strong>Save in ALL formats simultaneously</strong> (-oN, -oX, -oG). Creates basename.nmap, basename.xml, basename.gnmap. Professional standard — always use -oA in real engagements.</td>
+          </tr>
+          <tr>
+            <td>-v / -vv</td>
+            <td class="syntax">nmap -v [target]
+nmap -vv [target]</td>
+            <td class="example">nmap -sV -vv target</td>
+            <td class="job"><span class="badge critical">CRITICAL</span><br>Verbose output. -v shows results as they come in (don't wait for scan to finish). -vv gives more detail. Always use -v in long scans so you can see partial results immediately.</td>
+          </tr>
+          <tr>
+            <td>--open</td>
+            <td class="syntax">nmap --open [target]</td>
+            <td class="example">nmap -p- --open target</td>
+            <td class="job"><span class="badge recon">RECON</span><br>Show ONLY open ports in output. Filters out closed/filtered noise. Cleaner output for quick triage — extremely useful in large scans with many filtered ports.</td>
+          </tr>
+          <tr>
+            <td>--reason</td>
+            <td class="syntax">nmap --reason [target]</td>
+            <td class="example">nmap --reason target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Show WHY a port is in each state (syn-ack, rst, no-response, etc). Great for debugging scan results and explaining findings in professional reports.</td>
+          </tr>
+          <tr>
+            <td>--packet-trace</td>
+            <td class="syntax">nmap --packet-trace [target]</td>
+            <td class="example">nmap --packet-trace -p 80 target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Show every packet sent and received. Debugging and learning tool. Understand exactly what nmap is doing at the packet level — invaluable for network interview questions.</td>
+          </tr>
+          <tr>
+            <td>-d / -d2</td>
+            <td class="syntax">nmap -d [target]</td>
+            <td class="example">nmap -d2 -sS target</td>
+            <td class="job">Debug mode. -d shows debug output, -d2 shows more. Use to troubleshoot why a scan is behaving unexpectedly. Deep technical insight into nmap's decision-making.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FIREWALL EVASION -->
+  <div id="section-firewall" class="section">
+    <div class="section-header">
+      <div class="section-title">FIREWALL EVASION & SPOOFING</div>
+    </div>
+    <div class="section-desc">Advanced techniques to bypass security controls. Knowing these shows you understand offensive and defensive mindsets simultaneously — exactly what SOC/pentest interviews want.</div>
+    <div class="interview">
+      <div class="interview-label">// 🎯 INTERVIEW GOLD</div>
+      "How would you scan a target without triggering their IDS?" Combine: <strong>-sS -T1 -f --data-length 25 -D RND:10 --source-port 53</strong>. SYN scan + slow timing + fragmented packets + random decoys + spoofed source port (DNS port 53 often bypasses egress rules).
+    </div>
+    <div class="table-wrap">
+      <table id="table-firewall">
+        <thead>
+          <tr><th>COMMAND</th><th>SYNTAX</th><th>EXAMPLE</th><th>JOB OF COMMAND</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>-f</td>
+            <td class="syntax">nmap -f [target]</td>
+            <td class="example">nmap -f -sS 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><span class="badge critical">CRITICAL</span><br><strong>Fragment packets</strong> into 8-byte chunks. Many older IDS/firewalls can't reassemble and inspect fragmented packets — signatures don't trigger. Classic evasion technique.</td>
+          </tr>
+          <tr>
+            <td>--mtu</td>
+            <td class="syntax">nmap --mtu [size] [target]</td>
+            <td class="example">nmap --mtu 8 10.10.10.5</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Custom MTU for packet fragmentation. Must be multiple of 8. Finer control than -f. Smaller MTU = more fragments = harder for some IDS to reassemble and inspect.</td>
+          </tr>
+          <tr>
+            <td>-D</td>
+            <td class="syntax">nmap -D [decoy1,decoy2,...] [target]</td>
+            <td class="example">nmap -D RND:10 10.10.10.5
+nmap -D 1.1.1.1,2.2.2.2,ME target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><span class="badge critical">CRITICAL</span><br><strong>Decoy scan.</strong> Mix real scan packets with spoofed IPs so it looks like multiple hosts are scanning. Target's logs show many IPs — analyst can't easily identify real attacker. RND:10 = 10 random decoys.</td>
+          </tr>
+          <tr>
+            <td>-S</td>
+            <td class="syntax">nmap -S [spoof_IP] -e [interface] [target]</td>
+            <td class="example">nmap -S 192.168.1.100 -e eth0 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Spoof source IP address. Replies go to the spoofed IP, not you — results are blind. Useful in combination with -D or for framing/misdirection in advanced scenarios.</td>
+          </tr>
+          <tr>
+            <td>--source-port</td>
+            <td class="syntax">nmap --source-port [port] [target]</td>
+            <td class="example">nmap --source-port 53 10.10.10.5
+nmap --source-port 80 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><span class="badge critical">CRITICAL</span><br><strong>Spoof source port.</strong> Port 53 (DNS) and 80 (HTTP) are often whitelisted in egress rules. Firewalls configured to allow inbound traffic "from" port 53 can be fooled.</td>
+          </tr>
+          <tr>
+            <td>--data-length</td>
+            <td class="syntax">nmap --data-length [bytes] [target]</td>
+            <td class="example">nmap --data-length 25 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Append random data to packets to change their size. Default nmap packets have predictable sizes — IDS can fingerprint them. Random padding breaks size-based signatures.</td>
+          </tr>
+          <tr>
+            <td>--randomize-hosts</td>
+            <td class="syntax">nmap --randomize-hosts [range]</td>
+            <td class="example">nmap --randomize-hosts 192.168.1.0/24</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Randomize the order hosts are scanned. Avoids sequential scan patterns that IDS systems detect as port scans. Looks more like organic network traffic.</td>
+          </tr>
+          <tr>
+            <td>--proxies</td>
+            <td class="syntax">nmap --proxies [proxy_url] [target]</td>
+            <td class="example">nmap --proxies socks4://proxy:1080 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Route TCP connections through HTTP/SOCKS4 proxies. Hides true origin IP. Note: only works with -sT (TCP Connect), not raw packet scans like -sS.</td>
+          </tr>
+          <tr>
+            <td>--spoof-mac</td>
+            <td class="syntax">nmap --spoof-mac [MAC/vendor] [target]</td>
+            <td class="example">nmap --spoof-mac Apple target
+nmap --spoof-mac 0 target</td>
+            <td class="job"><span class="badge stealth">STEALTH</span><br>Spoof MAC address in Ethernet frames. Only effective on local LAN (Layer 2). Use vendor name or 0 for random MAC. Evades MAC-based access controls and forensic attribution.</td>
+          </tr>
+          <tr>
+            <td>-e</td>
+            <td class="syntax">nmap -e [interface] [target]</td>
+            <td class="example">nmap -e eth0 target
+nmap -e tun0 target</td>
+            <td class="job"><span class="badge pro">PRO</span><br>Specify which network interface to use. Essential when using a VPN (tun0) or when multiple NICs exist. Required with -S (IP spoofing) so nmap knows where to send packets.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INTERVIEW -->
+  <div id="section-interview" class="section">
+    <div class="section-header">
+      <div class="section-title">🎯 INTERVIEW COMMAND SCENARIOS</div>
+    </div>
+    <div class="section-desc">Real-world command combinations you'll be asked to demonstrate or explain. Memorize these scenarios cold.</div>
+
+    <div class="table-wrap">
+      <table id="table-interview">
+        <thead>
+          <tr><th>SCENARIO</th><th>COMMAND</th><th>WHY THIS WORKS</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Quick initial recon of a subnet</td>
+            <td class="example">nmap -sn 192.168.1.0/24 -oG alive_hosts.txt</td>
+            <td class="job">Ping sweep entire subnet. Save grepable output. Fast, doesn't touch ports. First step of every internal pentest.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Full port scan, fast</td>
+            <td class="example">nmap -p- --min-rate 5000 -T4 10.10.10.5</td>
+            <td class="job">All 65535 ports. Min 5000 pkt/sec. Aggressive timing. Classic CTF/lab initial scan combo.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Full enumeration after finding open ports</td>
+            <td class="example">nmap -sV -sC -O -p 22,80,443,8080 -oA full_enum target</td>
+            <td class="job">Version + default scripts + OS detection on discovered ports. Save all formats. Standard pentest step 2.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Stealth scan to evade IDS</td>
+            <td class="example">nmap -sS -T1 -f -D RND:10 --source-port 53 --data-length 25 target</td>
+            <td class="job">SYN + slow + fragmented + 10 decoys + DNS source port + random padding. Maximum stealth layering.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Check for EternalBlue (MS17-010)</td>
+            <td class="example">nmap -p 445 --script=smb-vuln-ms17-010 10.10.10.5</td>
+            <td class="job">Target SMB port specifically. Run the EternalBlue detection script. Critical finding in Windows environments.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">UDP service discovery</td>
+            <td class="example">nmap -sU -sS -p U:53,161,67,T:22,80,443 -sV target</td>
+            <td class="job">Combined UDP+TCP scan. Targets DNS, SNMP, DHCP on UDP and common TCP ports. Complete protocol coverage.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Scan target that blocks ping</td>
+            <td class="example">nmap -Pn -sS -p- -T4 target</td>
+            <td class="job">-Pn skips host discovery, assumes host is up. Essential when ICMP is firewall-blocked and target appears dead.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Vulnerability scan all services</td>
+            <td class="example">nmap -sV --script=vuln -oA vuln_scan target</td>
+            <td class="job">Detect versions then run ALL vuln scripts. Comprehensive automated vuln detection. First pass in authorized assessment.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Map firewall rules</td>
+            <td class="example">nmap -sA -p 1-65535 target</td>
+            <td class="job">ACK scan to determine which ports are filtered vs unfiltered. Reveals firewall topology without triggering open-port alerts.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Scan through VPN</td>
+            <td class="example">nmap -e tun0 -sS -sV target</td>
+            <td class="job">Force use of VPN interface. Essential in HTB/THM labs where tun0 is your tunnel to the target network.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">Check SSL/TLS vulnerabilities</td>
+            <td class="example">nmap -p 443 --script=ssl-heartbleed,ssl-poodle,ssl-dh-params target</td>
+            <td class="job">Run multiple SSL/TLS vulnerability scripts at once. Catches Heartbleed, POODLE, and weak DH params in one shot.</td>
+          </tr>
+          <tr>
+            <td style="color:var(--yellow);font-family:'Share Tech Mono',monospace;font-size:12px;white-space:normal;">SOC: Incident response triage</td>
+            <td class="example">nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt</td>
+            <td class="job">Fast top-100 scan + version detection + show only open + save output. Quick triage of suspicious internal host during an incident.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">// GURU — WHAT SEPARATES YOU FROM OTHER CANDIDATES</div>
+      Most candidates know nmap flags. <strong>You</strong> know the WHY behind each flag, what TCP handshake state it exploits, how IDS detects it, and how to chain flags for specific scenarios. When asked "how would you scan X", always explain your flag choices. That's what gets you hired.
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  NMAP CHEATSHEET — FOR SOC · PENTEST · BLUE TEAM INTERVIEWS — <span>KNOWLEDGE IS POWER</span>
+</footer>
+
+<script>
+  function showTab(name, el) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('section-' + name).classList.add('active');
+    el.classList.add('active');
+    document.getElementById('searchInput').value = '';
+    // reset hidden rows
+    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('hidden'));
+  }
+
+  function filterTable() {
+    const val = document.getElementById('searchInput').value.toLowerCase();
+    // Show all sections when searching
+    if (val.length > 0) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+      // Create a combined search view
+      let found = false;
+      document.querySelectorAll('tbody tr').forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const section = row.closest('.section');
+        if (text.includes(val)) {
+          row.classList.remove('hidden');
+          if (section) { section.style.display = 'block'; section.classList.add('active'); }
+          found = true;
+        } else {
+          row.classList.add('hidden');
+        }
+      });
+    } else {
+      document.querySelectorAll('.section').forEach(s => s.style.display = '');
+      document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('hidden'));
+      // Restore active tab
+      const activeTab = document.querySelector('.tab.active');
+      if (activeTab) {
+        const tabName = activeTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('section-' + tabName).classList.add('active');
+      }
+    }
+  }
+</script>
+</body>
+</html>
