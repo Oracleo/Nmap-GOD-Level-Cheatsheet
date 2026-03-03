@@ -24,7 +24,7 @@
 
 ---
 
-## ⚡ What Is This?
+## What Is This?
 
 A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity professionals preparing for SOC analyst, penetration tester, and blue team interviews. No frameworks, no dependencies, no internet required — open the HTML file and it just works.
 
@@ -32,7 +32,7 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 
 ---
 
-## 🖥️ Preview
+## Preview
 
 <div align="center">
 
@@ -44,7 +44,7 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 
 ---
 
-## 🗂️ What's Inside
+## What's Inside
 
 | Tab | Contents |
 |-----|----------|
@@ -61,7 +61,7 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 **Option 1 — Just open it:**
 ```bash
@@ -77,7 +77,7 @@ Visit the live demo → **[oracleo.github.io/Nmap-GOD-Level-Cheatsheet](https://
 
 ---
 
-## 🧠 Commands Covered
+## Commands Covered
 
 
 ```
@@ -101,7 +101,7 @@ dns-zone-transfer │  -T5  insane      │  --data-length    │  --open  --rea
 
 ---
 
-## 🎯 Interview Scenarios Included
+## Interview Scenarios Included
 
 Real command combinations you'll be asked to demonstrate:
 
@@ -129,7 +129,7 @@ nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt
 
 ---
 
-## 🏗️ Features
+## Features
 
 - **🔎 Live Search** — Filter any command, flag, or keyword instantly across all categories
 - **📑 Tabbed Navigation** — 9 organized sections, zero clutter
@@ -141,7 +141,7 @@ nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt
 
 ---
 
-## 🎓 Who Is This For?
+## Who Is This For?
 
 ```
 ✅ SOC Analyst candidates preparing for technical interviews
