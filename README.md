@@ -73,7 +73,7 @@ xdg-open nmap-cheatsheet.html  # Linux
 
 **Option 2 — Live on GitHub Pages:**
 
-Visit the live demo → **[yourusername.github.io/Nmap-GOD-Level-Cheatsheet](https://oracleo.github.io/Nmap-GOD-Level-Cheatsheet/Nmap-GOD-Level-Cheatsheet.html)**
+Visit the live demo → **[oracleo.github.io/Nmap-GOD-Level-Cheatsheet](https://oracleo.github.io/Nmap-GOD-Level-Cheatsheet/Nmap-GOD-Level-Cheatsheet.html)**
 
 ---
 
