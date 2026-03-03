@@ -79,7 +79,6 @@ Visit the live demo → **[oracleo.github.io/Nmap-GOD-Level-Cheatsheet](https://
 
 ## 🧠 Commands Covered
 
-<div align="center">
 
 ```
 HOST DISCOVERY    │  SCAN TYPES       │  PORT CONTROL     │  VERSION & OS
@@ -99,7 +98,6 @@ ssl-heartbleed    │  -T4  aggressive  │  --spoof-mac      │  -oA  all form
 dns-zone-transfer │  -T5  insane      │  --data-length    │  --open  --reason
 ```
 
-</div>
 
 ---
 
