@@ -38,6 +38,7 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 | Overview Tab | Scan Types | Interview Scenarios |
 |:---:|:---:|:---:|
 | Quick-reference flag grid | Deep-dive with TCP logic | 12 real interview combos |
+
 [![Live Demo](https://img.shields.io/badge/🚀_LIVE_DEMO-View_Cheatsheet-00ff9d?style=for-the-badge&labelColor=050a0f)](https://oracleo.github.io/Nmap-GOD-Level-Cheatsheet/Nmap-GOD-Level-Cheatsheet.html)
 <img width="1343" height="631" alt="image" src="https://github.com/user-attachments/assets/d93a7770-da17-4e5b-9296-dbf019bcba1d" />
 
