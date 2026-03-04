@@ -50,16 +50,16 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 
 | Tab | Contents |
 |-----|----------|
-| **⚡ Overview** | Master quick-reference grid — every flag group at a glance |
-| **🔍 Host Discovery** | Ping sweeps, ARP, ICMP, -Pn, -PS/PA — find live hosts first |
-| **🔫 Scan Types** | SYN vs TCP Connect vs UDP, Null/FIN/Xmas stealth scans with handshake logic |
-| **🎯 Port Selection** | Single ports, ranges, all 65535, UDP+TCP combos, --min-rate tricks |
-| **🔬 Version & OS** | -sV, -O, -A, --osscan-guess, version intensity control |
-| **📜 NSE Scripts** | EternalBlue, Heartbleed, DNS zone transfer, FTP anon, HTTP enumeration |
-| **⏱️ Timing** | -T0 through -T5 explained, --min-rate, --max-rate, parallelism |
-| **💾 Output** | -oA as the professional standard, --reason, --packet-trace |
-| **🛡️ Firewall Evasion** | Decoys (-D), fragmentation (-f), source port spoofing, MAC spoofing |
-| **🎯 Interview Scenarios** | 12 real-world command combos with full explanations of WHY |
+| **Overview** | Master quick-reference grid — every flag group at a glance |
+| **Host Discovery** | Ping sweeps, ARP, ICMP, -Pn, -PS/PA — find live hosts first |
+| **Scan Types** | SYN vs TCP Connect vs UDP, Null/FIN/Xmas stealth scans with handshake logic |
+| **Port Selection** | Single ports, ranges, all 65535, UDP+TCP combos, --min-rate tricks |
+| **Version & OS** | -sV, -O, -A, --osscan-guess, version intensity control |
+| **NSE Scripts** | EternalBlue, Heartbleed, DNS zone transfer, FTP anon, HTTP enumeration |
+| **Timing** | -T0 through -T5 explained, --min-rate, --max-rate, parallelism |
+| **Output** | -oA as the professional standard, --reason, --packet-trace |
+| **Firewall Evasion** | Decoys (-D), fragmentation (-f), source port spoofing, MAC spoofing |
+| **Interview Scenarios** | 12 real-world command combos with full explanations of WHY |
 
 ---
 
@@ -133,13 +133,13 @@ nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt
 
 ## Features
 
-- **🔎 Live Search** — Filter any command, flag, or keyword instantly across all categories
-- **📑 Tabbed Navigation** — 9 organized sections, zero clutter
-- **🎨 Terminal Aesthetic** — Dark, hacker-themed UI built with pure HTML/CSS/JS
-- **📱 Responsive** — Works on desktop and mobile
-- **⚡ Zero Dependencies** — Single HTML file, works fully offline
-- **🏷️ Severity Badges** — Commands tagged as STEALTH / LOUD / RECON / CRITICAL / PRO
-- **💡 Guru Tips** — Contextual interview insights throughout each section
+- **Live Search** — Filter any command, flag, or keyword instantly across all categories
+- **Tabbed Navigation** — 9 organized sections, zero clutter
+- **Terminal Aesthetic** — Dark, hacker-themed UI built with pure HTML/CSS/JS
+- **Responsive** — Works on desktop and mobile
+- **Zero Dependencies** — Single HTML file, works fully offline
+- **Severity Badges** — Commands tagged as STEALTH / LOUD / RECON / CRITICAL / PRO
+- **Guru Tips** — Contextual interview insights throughout each section
 
 ---
 
@@ -156,7 +156,7 @@ nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Choice | Why |
 |-------|--------|-----|
@@ -168,7 +168,7 @@ nmap -F -sV -T4 --open suspicious_ip -oN ir_triage.txt
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```
 Nmap-GOD-Level-Cheatsheet/
@@ -180,7 +180,7 @@ Nmap-GOD-Level-Cheatsheet/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Found a missing command? Know a better interview answer? PRs are welcome.
 
@@ -193,13 +193,13 @@ Open an issue if you want to suggest a new section (e.g., Metasploit integration
 
 ---
 
-## 📜 License
+## License
 
 MIT — use it, share it, build on it. Credit appreciated but not required.
 
 ---
 
-## 🌐 Connect
+## Connect
 
 If this helped you land a role or pass an interview, I'd love to know.
 
