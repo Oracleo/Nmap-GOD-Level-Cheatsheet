@@ -12,13 +12,12 @@
 **God-Level Interactive Reference for SOC Analysts & Penetration Testers**
 
 [![Live Demo](https://img.shields.io/badge/🚀_LIVE_DEMO-View_Cheatsheet-00ff9d?style=for-the-badge&labelColor=050a0f)](https://oracleo.github.io/Nmap-GOD-Level-Cheatsheet/Nmap-GOD-Level-Cheatsheet.html)
-[![License](https://img.shields.io/badge/LICENSE-MIT-00d4ff?style=for-the-badge&labelColor=050a0f)](LICENSE)
-[![PRs Welcome](https://img.shields.io/badge/PRs-WELCOME-ff6b35?style=for-the-badge&labelColor=050a0f)](CONTRIBUTING.md)
+
 
 ![nmap](https://img.shields.io/badge/NMAP-7.94-00ff9d?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwZmY5ZCIgZD0iTTEyIDJMMiA3bDEwIDUgMTAtNUwxMiAyem0wIDE1bC0xMC01djVsMTAgNSAxMC01di01bC0xMCA1eiIvPjwvc3ZnPg==&labelColor=050a0f)
 ![SOC](https://img.shields.io/badge/ROLE-SOC_ANALYST-00d4ff?style=flat-square&labelColor=050a0f)
 ![Pentest](https://img.shields.io/badge/ROLE-PENETRATION_TESTER-ff6b35?style=flat-square&labelColor=050a0f)
-![HTML](https://img.shields.io/badge/BUILT_WITH-HTML_·_CSS_·_JS-ffd700?style=flat-square&labelColor=050a0f)
+
 
 </div>
 
@@ -39,6 +38,8 @@ A **single-file, fully interactive NMAP cheatsheet** built for cybersecurity pro
 | Overview Tab | Scan Types | Interview Scenarios |
 |:---:|:---:|:---:|
 | Quick-reference flag grid | Deep-dive with TCP logic | 12 real interview combos |
+[![Live Demo](https://img.shields.io/badge/🚀_LIVE_DEMO-View_Cheatsheet-00ff9d?style=for-the-badge&labelColor=050a0f)](https://oracleo.github.io/Nmap-GOD-Level-Cheatsheet/Nmap-GOD-Level-Cheatsheet.html)
+<img width="1343" height="631" alt="image" src="https://github.com/user-attachments/assets/d93a7770-da17-4e5b-9296-dbf019bcba1d" />
 
 </div>
 
